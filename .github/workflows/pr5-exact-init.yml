@@ -1,0 +1,25 @@
+name: PR5 exact-commit validation
+on:
+  push:
+    branches: [validation/axios-init-pr5-20261101]
+permissions:
+  contents: read
+jobs:
+  node26-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 31630fdac86b39978244b17752f25821733ea01c
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 26.x
+          package-manager-cache: false
+      - name: Verify exact contribution commit
+        run: test "$(git rev-parse HEAD)" = 31630fdac86b39978244b17752f25821733ea01c
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test:vitest:unit
